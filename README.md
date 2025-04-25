@@ -1,1 +1,3 @@
-[**# ML-major-project# ML-Main**](https://www.udemy.com/course/the-complete-web-development-bootcam)
+# Accident Detection Using Machine Learning
+
+This project implements an accident detection system using a machine learning model trained on image data. The system can process video feeds or images to classify frames as either "Accident" or "Non-Accident."
