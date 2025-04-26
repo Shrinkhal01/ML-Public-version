@@ -3,59 +3,62 @@ import tensorflow as tf
 import numpy as np
 import os
 
-# Load your trained model from the saved location.
-# Adjust the path relative to this script's location.
-model = tf.keras.models.load_model("../saved_model/my_model.keras")
+# Constants
+MODEL_PATH = "../saved_model/my_model.keras"
+TRAIN_DIR = "../train"
+VIDEO_SOURCE = "acc8.mp4"  # Change to 0 for webcam feed
+IMG_HEIGHT = 720
+IMG_WIDTH = 1280
 
-# Define image parameters (same as used during training)
-img_height = 720
-img_width = 1280
+def get_class_names(train_directory):
+    """Get sorted class names from the training directory."""
+    return sorted([d for d in os.listdir(train_directory) if not d.startswith('.')])
 
-# Generate class names based on folder names in the train directory.
-# This excludes hidden files like .DS_Store.
-train_dir = os.path.join("..", "train")
-class_names = [d for d in os.listdir(train_dir) if not d.startswith('.')]
-class_names.sort()
-
-def preprocess_frame(frame):
-    frame_resized = cv2.resize(frame, (img_width, img_height))
+def preprocess_frame(frame, target_size):
+    """Resize and preprocess a frame for model prediction."""
+    frame_resized = cv2.resize(frame, target_size)
     frame_array = np.array(frame_resized, dtype=np.float32)
-    frame_array = np.expand_dims(frame_array, axis=0)
-    return frame_array
-video_source = ""  # or 0 to use a webcam feed
-cap = cv2.VideoCapture(video_source)
+    return np.expand_dims(frame_array, axis=0)
 
-if not cap.isOpened():
-    print("Error: Could not open video source.")
-    exit()
+def process_video(video_source, model, class_names, target_size):
+    """Process video frame by frame and display predictions."""
+    cap = cv2.VideoCapture(video_source)
 
-while cap.isOpened():
-    ret, frame = cap.read()
-    if not ret:
-        print("End of video or cannot read the frame.")
-        break
+    if not cap.isOpened():
+        print("Error: Could not open video source.")
+        return
 
-    # Preprocess the frame for the model.
-    preprocessed_frame = preprocess_frame(frame)
+    while cap.isOpened():
+        ret, frame = cap.read()
+        if not ret:
+            print("End of video or cannot read the frame.")
+            break
 
-    # Run model inference on the frame.
-    predictions = model.predict(preprocessed_frame)
-    pred_class = np.argmax(predictions[0])
-    confidence = predictions[0][pred_class]
+        # Preprocess frame and predict
+        preprocessed_frame = preprocess_frame(frame, target_size)
+        predictions = model.predict(preprocessed_frame)
+        pred_class = np.argmax(predictions[0])
+        confidence = predictions[0][pred_class]
 
-    # Build the text to display on the frame.
-    label_text = f"{class_names[pred_class]}: {confidence:.2f}"
+        # Display prediction on the frame
+        label_text = f"{class_names[pred_class]}: {confidence:.2f}"
+        cv2.putText(frame, label_text, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
 
-    # Display the prediction on the frame.
-    # You can adjust position, font, color, and thickness as needed.
-    cv2.putText(frame, label_text, (10, 30),
-                cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+        cv2.imshow("Accident Detection", frame)
 
-    cv2.imshow("Accident Detection", frame)
+        # Exit on 'q' press
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
 
-    # Exit if user presses 'q'
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
+    cap.release()
+    cv2.destroyAllWindows()
 
-cap.release()
-cv2.destroyAllWindows()
+if __name__ == "__main__":
+    # Load model
+    model = tf.keras.models.load_model(MODEL_PATH)
+
+    # Get class names
+    class_names = get_class_names(TRAIN_DIR)
+
+    # Process video
+    process_video(VIDEO_SOURCE, model, class_names, (IMG_WIDTH, IMG_HEIGHT))
