@@ -26,7 +26,10 @@ model.compile(
     loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=False),
     metrics=['accuracy']
 )
-
+#in short the model.compile is used to configure the model for training.
+# The optimizer is used to update the model's weights during training.
+# the loss function simply measures how well the model is performing.
+# The metrics parameter is used to specify the metrics to be evaluated during training and testing.
 train_ds = image_dataset_from_directory(
     "./train",
     labels='inferred',
@@ -35,6 +38,8 @@ train_ds = image_dataset_from_directory(
     image_size=(img_height, img_width),
     batch_size=batch_size
 )
+# The image_dataset_from_directory function is used to load images from a directory and create a dataset.
+
 
 val_ds = image_dataset_from_directory(
     "./val",
@@ -44,6 +49,7 @@ val_ds = image_dataset_from_directory(
     image_size=(img_height, img_width),
     batch_size=batch_size
 )
+# The image_dataset_from_directory function is used to load images from a directory and create a dataset.
 
 epochs = 10
 history = model.fit(
@@ -51,5 +57,5 @@ history = model.fit(
     validation_data=val_ds,
     epochs=epochs
 )
-
+# The model.fit function is used to train the model on the training data and validate it on the validation data.
 model.save("saved_model/my_model.keras")
