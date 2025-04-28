@@ -8,7 +8,7 @@ import os
 def notify_authorities(subject, body, attachments):
     # Email configuration
     sender_email = "shrinkhalshrinkhal@gmail.com"  # Replace with your email
-    receiver_emails = ["privatehvro@gmail.com", "shrinkhalshrinkhal22@gmail.com", "adityabhatt78910@gmail.com", "lakshitatak1@gmail.com", "iishasharrma@gmail.com"]
+    receiver_emails = ["privatehvro@gmail.com", "shrinkhalshrinkhal22@gmail.com", "adityabhatt78910@gmail.com", "lakshitatak1@gmail.com", "iishasharrma@gmail.com","idforextraapp@gmail.com"]
     password = "pptsbbotjoqgwdkp"  # The password for the sender email (App Password)
 
     # Create the email
