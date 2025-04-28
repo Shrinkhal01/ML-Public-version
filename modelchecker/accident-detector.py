@@ -8,7 +8,7 @@ from email_sender import notify_authorities
 
 MODEL_PATH = "../saved_model/my_model.keras"
 TRAIN_DIR = "../train"
-VIDEO_PATH = "video.mp4"
+VIDEO_PATH = "/Users/shrinkhals/Downloads/accidentl.mp4"
 IMG_HEIGHT = 720
 IMG_WIDTH = 1280
 
@@ -84,8 +84,10 @@ def process_video(video_path, model, class_names, target_size):
             accident_counter = 0
             accident_frames = []
 
-        if cv2.waitKey(1) & 0xFF == ord('q'):
+        if cv2.waitKey(1) & 0xFF == ord('q'):  # Check if 'q' is pressed
+            print("Exiting detection as 'q' was pressed.")
             break
+        
     cap.release()
     cv2.destroyAllWindows()
 if __name__ == "__main__":
