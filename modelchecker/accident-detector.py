@@ -26,9 +26,11 @@ def process_video(video_path, model, class_names, target_size):
     if not cap.isOpened():
         print("Error: Could not open video.")
         return
-    accident_counter=0
-    accident_frames=[]
-    email_counter=0
+
+    accident_counter = 0
+    accident_frames = []
+    email_counter = 0
+
     while True:
         ret, frame = cap.read()
         if not ret:
@@ -37,30 +39,32 @@ def process_video(video_path, model, class_names, target_size):
         frame_array = preprocess_frame(frame, target_size)
         predictions = model.predict(frame_array)
         predicted_class = np.argmax(predictions[0])
-        confidence = predictions[0][predicted_class]# this is the confidence score of the predicted class
+        confidence = predictions[0][predicted_class]
 
         # Debugging: Print predicted class and confidence
-        print(f"Predicted class: {class_names[predicted_class]}, Confidence: {confidence:.2f}") # this just prints the predicted class and confidence score
+        print(f"Predicted class: {class_names[predicted_class]}, Confidence: {confidence:.2f}")
 
-        label = f"{class_names[predicted_class]} ({confidence:.2f})" #this just adds the predicted class and confidence score to the label
-        cv2.putText(frame, label, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)# this just adds the predicted class and confidence score to the label
-        cv2.imshow("Video", frame)
+        label = f"{class_names[predicted_class]} ({confidence:.2f})"
+        cv2.putText(frame, label, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
 
-        if class_names[predicted_class].lower() == "accident" and confidence >= 0.85:  # Adjusted threshold
+        # Check if the detected class is "Accident" (case-insensitive) and confidence > 0.85
+        if class_names[predicted_class].lower() == "accident" and confidence >= 0.85:
             accident_counter += 1
+
+            # Turn the screen boundary red
+            cv2.rectangle(frame, (0, 0), (frame.shape[1], frame.shape[0]), (0, 0, 255), 10)
+
             # Save the screenshot in the screenshots folder
             screenshot_path = os.path.join(SCREENSHOTS_FOLDER, f"accident_frame_{accident_counter}.jpg")
-            
-            # Debugging: Check if screenshot is being saved
-            if cv2.imwrite(screenshot_path, frame):  # Save the frame to the screenshots folder
+            if cv2.imwrite(screenshot_path, frame):
                 print(f"Screenshot saved: {screenshot_path}")
             else:
                 print(f"Failed to save screenshot: {screenshot_path}")
-            
+
             accident_frames.append(screenshot_path)
 
             if accident_counter == 4:
-                if email_counter < 2: 
+                if email_counter < 2:
                     print("4 consecutive accident frames detected. Sending email...")
                     notify_authorities(
                         subject="Accident Detected!",
@@ -68,26 +72,30 @@ def process_video(video_path, model, class_names, target_size):
                         attachments=accident_frames
                     )
                     print("Email sent with accident screenshots.")
-                    email_counter += 1  # Increment email counter
-                else: 
+                    email_counter += 1
+                else:
                     print("Email limit reached. No more emails will be sent for this video.")
 
-                # Reset counters
                 accident_counter = 0
                 accident_frames = []
 
-                if(email_counter == 2):
-                    exit(0)
+                if email_counter == 2:
+                    print("Email limit reached. Exiting program.")
+                    break
         else:
-            # Debugging: Resetting counters
+            # Reset counters if no accident is detected
             print("No accident detected. Resetting counters.")
             accident_counter = 0
             accident_frames = []
 
-        if cv2.waitKey(1) & 0xFF == ord('q'):  # Check if 'q' is pressed
+        # Display the frame with the red boundary (if accident detected)
+        cv2.imshow("Video", frame)
+
+        # Exit the loop if 'q' is pressed
+        if cv2.waitKey(1) & 0xFF == ord('q'):
             print("Exiting detection as 'q' was pressed.")
             break
-        
+
     cap.release()
     cv2.destroyAllWindows()
 if __name__ == "__main__":
