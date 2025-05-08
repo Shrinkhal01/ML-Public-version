@@ -7,7 +7,7 @@ import cv2
 from email_sender import notify_authorities
 
 MODEL_PATH = "../saved_model/my_model.keras"
-TRAIN_DIR = "../train"
+TRAIN_DIR = "../train" # this directory is used to get the class names
 VIDEO_PATH = "/Users/shrinkhals/Downloads/accidentl.mp4"
 IMG_HEIGHT = 720
 IMG_WIDTH = 1280
