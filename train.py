@@ -13,7 +13,7 @@ model = keras.Sequential([
     keras.Input(shape=(img_height, img_width, num_channels)),
     layers.Conv2D(32, kernel_size=(3, 3), activation="relu"),
     layers.MaxPooling2D(pool_size=(2, 2)), # reduce the spatial dimensions of the feature maps
-    layers.Conv2D(32, kernel_size=(3, 3), activation="relu"),
+    layers.Conv2D(64, kernel_size=(3, 3), activation="relu"),
     layers.MaxPooling2D(pool_size=(2, 2)), # reduce the spatial dimensions of the feature maps
     layers.Flatten(), # flatten the 3D output to 1D
     layers.Dense(num_classes, activation="softmax") 
