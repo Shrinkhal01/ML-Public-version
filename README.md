@@ -5,3 +5,4 @@
  - The accuracy of the model is around 82%.
  - Trained the model for 10 epochs.
  - The epochs are less since the higher number of epochs was leading to the  overfitting
+ - The trained model is inside the folder saved_model.
