@@ -23,8 +23,8 @@ os.makedirs(SCREENSHOT_DIR, exist_ok=True)
     password = "pptsbbotjoqgwdkp"  # The password for the sender email (App Password)
 
 
-SENDER_EMAIL     = os.getenv("shrinkhalshrinkhal@gmail.com")
-EMAIL_PASSWORD   = os.getenv("pptsbbotjoqgwdkpD")
+SENDER_EMAIL     = os.getenv("your email")
+EMAIL_PASSWORD   = os.getenv("your email password")
 RECEIVER_EMAILS  = os.getenv("shrinkhalshrinkhal22@gmail.com","adityabhatt78910@gmail.com","lakshitatak1@gmail.com","iishasharrma@gmail.com","idforextraapp@gmail.com","").split(",")
 CONFIDENCE_THRESH= float(os.getenv("CONF_THRESH", "0.85"))
 MAX_EMAILS       = int(os.getenv("MAX_EMAILS", "2"))
